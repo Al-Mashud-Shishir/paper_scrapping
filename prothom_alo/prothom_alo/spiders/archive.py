@@ -27,6 +27,13 @@ def append_to_file(path, data):
     with open(path, 'a', encoding="utf-8") as file:
         file.write(data)
 
+        # first_url=urljoin(datewise_archive_url, "?edition=print")
+        # for extra in self.extra_urls:
+        #     first_url = urljoin(datewise_archive_url, extra)
+        # # ?edition=print&page=
+        # # ?edition=online
+        # # ?edition=online&page=2
+
 
 class ArchiveSpider(scrapy.Spider):
     name = 'archive'
@@ -48,17 +55,12 @@ class ArchiveSpider(scrapy.Spider):
                 for d in dates:
                     dateUrl = y+"-"+m+"-"+d
                     datewise_archive_url = urljoin(response.url, dateUrl)
-                    for extra in self.extra_urls:
-                        first_url = urljoin(datewise_archive_url, extra)
-                    # ?edition=print&page=
-                    # ?edition=online
-                    # ?edition=online&page=2
-                        for p in range(2, 50):
-                            page_url = "&page="+str(p)
-                            datewise_archive_page_url = urljoin(
-                                first_url, page_url)
-                            yield scrapy.Request(datewise_archive_page_url, callback=self.parse_archive, dont_filter=True)
-                        yield scrapy.Request(first_url, callback=self.parse_archive, dont_filter=True)
+                    for p in range(2, 12):
+                        page_url = "?edition=print&page="+str(p)
+                        datewise_archive_page_url = urljoin(
+                            datewise_archive_url, page_url)
+                        yield scrapy.Request(datewise_archive_page_url, callback=self.parse_archive, dont_filter=True)
+                    # yield scrapy.Request(first_url, callback=self.parse_archive, dont_filter=True)
 
     def parse_archive(self, response):
         if response.status != 404:
